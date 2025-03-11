@@ -51,7 +51,7 @@ func main() {
 				float64(UPDATE_PRICE_PERIOD-(time.Now().Unix()-price.LastRefresh.Unix())),
 				UPDATE_PRICE_PERIOD))
 
-		message := createTelegramMessage(price.String(), nextUpdateSecond, CHANEL_NAME)
+		message := createTelegramMessage(price.String(), nextUpdateSecond, CHANEL_NAME, true)
 
 		if tel.LastMessageTime > 0 && tel.LastMessageId > 0 && (time.Now().Unix()-tel.LastMessageTime) <= NEW_MESSAGE_PERIOD {
 			if err := tel.UpdateMessage(message, tel.LastMessageId); err != nil {
@@ -60,6 +60,8 @@ func main() {
 				continue
 			}
 		} else {
+			tel.UpdateMessage(createTelegramMessage(price.String(), nextUpdateSecond, CHANEL_NAME, false), tel.LastMessageId)
+
 			if err := tel.SendMessage(message); err != nil {
 				fmt.Println("send telegram error:", err.Error())
 				time.Sleep(time.Minute)
@@ -69,23 +71,16 @@ func main() {
 	}
 }
 
-func createTelegramMessage(priceData string, nextUpdateSecond int64, chanelName string) string {
-	message := priceData
-
-	if nextUpdateSecond >= 7 {
-		message = fmt.Sprintf(`%s
-ا⏰ %02d ثانیه تا بروزرسانی بعدی
-
-%s
-`, priceData, nextUpdateSecond, chanelName)
-
-	} else {
-		message = fmt.Sprintf(`%s
-🔄 درحال بروزرسانی
-
-%s
-`, priceData, chanelName)
+func createTelegramMessage(priceData string, nextUpdateSecond int64, chanelName string, counter bool) string {
+	if !counter {
+		return fmt.Sprintf("%s\n\n%s", priceData, chanelName)
 	}
 
-	return message
+	if nextUpdateSecond >= 7 {
+		return fmt.Sprintf("ا⏰ %02d ثانیه تا بروزرسانی بعدی قیمت ها\n\n%s\n\n%s", nextUpdateSecond, priceData, chanelName)
+	} else if nextUpdateSecond >= 3 {
+		return fmt.Sprintf("ا🔄 درحال بروزرسانی قیمت ها \n\n%s\n\n%s", priceData, chanelName)
+	} else {
+		return fmt.Sprintf("ا🔄 درحال بروزرسانی قیمت ها\n\n%s\n\n%s", priceData, chanelName)
+	}
 }

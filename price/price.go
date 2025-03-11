@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/onionj/pricebot/utils"
@@ -23,6 +25,7 @@ type CurrentData struct {
 	CAD    Detail `json:"price_cad"`
 	AUD    Detail `json:"price_aud"`
 	AED    Detail `json:"price_aed"`
+	TRY    Detail `json:"price_try"`
 
 	Tether   Detail `json:"crypto-tether-irr"`
 	BitCoin  Detail `json:"crypto-bitcoin"`
@@ -88,50 +91,83 @@ func (p *Price) Refresh() error {
 	return nil
 }
 
+func (p Price) prettyNumber(i int) string {
+	s := strconv.Itoa(i)
+	r1 := ""
+	idx := 0
+
+	// Reverse and interleave the separator.
+	for i = len(s) - 1; i >= 0; i-- {
+		idx++
+		if idx == 4 {
+			idx = 1
+			r1 = r1 + ","
+		}
+		r1 = r1 + string(s[i])
+	}
+
+	// Reverse back and return.
+	r2 := ""
+	for i = len(r1) - 1; i >= 0; i-- {
+		r2 = r2 + string(r1[i])
+	}
+	return r2
+}
+
+func (p Price) toToman(rilaString string) string {
+	rilaInt, err := strconv.Atoi(strings.Replace(rilaString, ",", "", 10))
+
+	if err != nil {
+		return "0"
+	}
+	return p.prettyNumber(rilaInt / 10)
+}
+
 func (p Price) String() string {
 
-	return fmt.Sprintf(`
-ا🇺🇸 دلار امریکا (%s): %s ریال
-ا🇪🇺 یورو اروپا (%s): %s ریال
-ا🇬🇧 پوند انگلیس (%s): %s ریال
-ا🇨🇦 دلار کانادا (%s): %s ریال
-ا🇦🇺 دلار استرالیا (%s): %s ریال
-ا🇦🇪 درهم امارات (%s): %s ریال
+	return fmt.Sprintf(`ا🇺🇸 دلار امریکا (%s) ⬅️ %s تومان
+ا🇪🇺 یورو اروپا (%s) ⬅️ %s تومان
+ا🇬🇧 پوند انگلیس (%s) ⬅️ %s تومان
+ا🇨🇦 دلار کانادا (%s) ⬅️ %s تومان
+ا🇦🇺 دلار استرالیا (%s) ⬅️ %s تومان
+ا🇦🇪 درهم امارات (%s) ⬅️ %s تومان
+ا🇹🇷 لیر ترکیه (%s) ⬅️ %s تومان
 
-ا👑 بیتکوین (%s): %s دلار
-ا🇺🇸 تتر (%s): %s ریال
-ا💠 اتریوم (%s): %s دلار
+ا👑 بیتکوین (%s) ⬅️ %s دلار
+ا🇺🇸 تتر (%s) ⬅️ %s تومان
+ا💠 اتریوم (%s) ⬅️ %s دلار
 
-ا🪙 سکه بهار آزادی (%s): %s ریال
-ا🪙 سکه امامی (%s): %s ریال
-ا🪙 نیم سکه (%s): %s ریال
-ا🪙 رب سکه (%s): %s ریال
-ا🪙 رب سکه قبل ۸۶ (%s): %s ریال
+ا🪙 سکه بهار آزادی (%s) ⬅️ %s تومان
+ا🪙 سکه امامی (%s) ⬅️ %s تومان
+ا🪙 نیم سکه (%s) ⬅️ %s تومان
+ا🪙 رب سکه (%s) ⬅️ %s تومان
+ا🪙 رب سکه قبل ۸۶ (%s) ⬅️ %s تومان
 
-ا💰 طلا گرمی (%s): %s ریال
-ا💰 مثقال طلا (%s): %s ریال
-ا💰 انس طلا (%s): %s دلار
+ا💰 طلا گرمی (%s) ⬅️ %s تومان
+ا💰 مثقال طلا (%s) ⬅️ %s تومان
+ا💰 انس طلا (%s) ⬅️ %s دلار
 
 ا📆 اخرین بروزرسانی: %02d:%02d:%02d %s`,
-		p.Current.Dollar.Time, p.Current.Dollar.Price,
-		p.Current.Eur.Time, p.Current.Eur.Price,
-		p.Current.GBP.Time, p.Current.GBP.Price,
-		p.Current.CAD.Time, p.Current.CAD.Price,
-		p.Current.AUD.Time, p.Current.AUD.Price,
-		p.Current.AED.Time, p.Current.AED.Price,
+		p.Current.Dollar.Time, p.toToman(p.Current.Dollar.Price),
+		p.Current.Eur.Time, p.toToman(p.Current.Eur.Price),
+		p.Current.GBP.Time, p.toToman(p.Current.GBP.Price),
+		p.Current.CAD.Time, p.toToman(p.Current.CAD.Price),
+		p.Current.AUD.Time, p.toToman(p.Current.AUD.Price),
+		p.Current.AED.Time, p.toToman(p.Current.AED.Price),
+		p.Current.TRY.Time, p.toToman(p.Current.TRY.Price),
 
 		p.Current.BitCoin.Time, p.Current.BitCoin.Price,
-		p.Current.Tether.Time, p.Current.Tether.Price,
+		p.Current.Tether.Time, p.toToman(p.Current.Tether.Price),
 		p.Current.Ethereum.Time, p.Current.Ethereum.Price,
 
-		p.Current.SekeB.Time, p.Current.SekeB.Price,
-		p.Current.SekeE.Time, p.Current.SekeE.Price,
-		p.Current.Nim.Time, p.Current.Nim.Price,
-		p.Current.Rob.Time, p.Current.Rob.Price,
-		p.Current.RobDown.Time, p.Current.RobDown.Price,
+		p.Current.SekeB.Time, p.toToman(p.Current.SekeB.Price),
+		p.Current.SekeE.Time, p.toToman(p.Current.SekeE.Price),
+		p.Current.Nim.Time, p.toToman(p.Current.Nim.Price),
+		p.Current.Rob.Time, p.toToman(p.Current.Rob.Price),
+		p.Current.RobDown.Time, p.toToman(p.Current.RobDown.Price),
 
-		p.Current.Geram18.Time, p.Current.Geram18.Price,
-		p.Current.Mesghal.Time, p.Current.Mesghal.Price,
+		p.Current.Geram18.Time, p.toToman(p.Current.Geram18.Price),
+		p.Current.Mesghal.Time, p.toToman(p.Current.Mesghal.Price),
 		p.Current.Ons.Time, p.Current.Ons.Price,
 		p.LastRefresh.Hour(), p.LastRefresh.Minute(), p.LastRefresh.Second(), p.JLastRefresh.String(),
 	)
