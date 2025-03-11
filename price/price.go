@@ -57,7 +57,7 @@ func (p *Price) Refresh() error {
 	ltime := time.Now().In(loc)
 
 	// ‍‍`what` just for deactivate cache!
-	url := fmt.Sprintf("https://call5.tgju.org/ajax.json?what=%d", ltime.Unix())
+	url := fmt.Sprintf("https://call3.tgju.org/ajax.json?what=%d", ltime.Unix())
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {

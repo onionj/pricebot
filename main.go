@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	NEW_MESSAGE_PERIOD    = 60 * 60
+	NEW_MESSAGE_PERIOD    = 60 * 60 * 4
 	UPDATE_MESSAGE_PERIOD = 5
 	UPDATE_PRICE_PERIOD   = 60
 	CHANEL_NAME           = "@iran98price"
