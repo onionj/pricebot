@@ -125,7 +125,9 @@ func (p Price) toToman(rilaString string) string {
 
 func (p Price) String() string {
 
-	return fmt.Sprintf(`ا🇺🇸 دلار امریکا (%s) ⬅️ %s تومان
+	return fmt.Sprintf(`ا📆 اخرین بروزرسانی: %02d:%02d:%02d %s
+
+ا🇺🇸 دلار امریکا (%s) ⬅️ %s تومان
 ا🇪🇺 یورو اروپا (%s) ⬅️ %s تومان
 ا🇬🇧 پوند انگلیس (%s) ⬅️ %s تومان
 ا🇨🇦 دلار کانادا (%s) ⬅️ %s تومان
@@ -145,9 +147,8 @@ func (p Price) String() string {
 
 ا💰 طلا گرمی (%s) ⬅️ %s تومان
 ا💰 مثقال طلا (%s) ⬅️ %s تومان
-ا💰 انس طلا (%s) ⬅️ %s دلار
-
-ا📆 اخرین بروزرسانی: %02d:%02d:%02d %s`,
+ا💰 انس طلا (%s) ⬅️ %s دلار`,
+		p.LastRefresh.Hour(), p.LastRefresh.Minute(), p.LastRefresh.Second(), p.JLastRefresh.String(),
 		p.Current.Dollar.Time, p.toToman(p.Current.Dollar.Price),
 		p.Current.Eur.Time, p.toToman(p.Current.Eur.Price),
 		p.Current.GBP.Time, p.toToman(p.Current.GBP.Price),
@@ -169,6 +170,5 @@ func (p Price) String() string {
 		p.Current.Geram18.Time, p.toToman(p.Current.Geram18.Price),
 		p.Current.Mesghal.Time, p.toToman(p.Current.Mesghal.Price),
 		p.Current.Ons.Time, p.Current.Ons.Price,
-		p.LastRefresh.Hour(), p.LastRefresh.Minute(), p.LastRefresh.Second(), p.JLastRefresh.String(),
 	)
 }
