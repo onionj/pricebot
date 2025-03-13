@@ -80,7 +80,7 @@ func createTelegramMessage(priceData string, nextUpdateSecond int64, chanelName 
 	}
 
 	if nextUpdateSecond >= 7 {
-		return fmt.Sprintf("ا⏰ %02d ثانیه تا بروزرسانی بعدی قیمت ها\n%s\n\n%s\n%s", nextUpdateSecond, priceData, proxy, chanelName)
+		return fmt.Sprintf("ا⏰ تا بروزرسانی بعدی قیمت ها: *%02d* ثانیه\n%s\n\n%s\n%s", nextUpdateSecond, priceData, proxy, chanelName)
 	} else if nextUpdateSecond >= 3 {
 		return fmt.Sprintf("ا🔄 درحال بروزرسانی قیمت ها \n%s\n\n%s\n%s", priceData, proxy, chanelName)
 	} else {
