@@ -26,6 +26,7 @@ type CurrentData struct {
 	AUD    Detail `json:"price_aud"`
 	AED    Detail `json:"price_aed"`
 	TRY    Detail `json:"price_try"`
+	SEK    Detail `json:"price_sek"`
 
 	Tether   Detail `json:"crypto-tether-irr"`
 	BitCoin  Detail `json:"crypto-bitcoin"`
@@ -134,6 +135,7 @@ func (p Price) String() string {
 ا🇦🇺 دلار استرالیا (%s) ⬅️ *%s* تومان
 ا🇦🇪 درهم امارات (%s) ⬅️ *%s* تومان
 ا🇹🇷 لیر ترکیه (%s) ⬅️ *%s* تومان
+ا🇸🇪 کرون سوئد (%s) ⬅️ *%s* تومان
 
 ا👑 بیتکوین (%s) ⬅️ *%s* دلار
 ا🇺🇸 تتر (%s) ⬅️ *%s* تومان
@@ -156,6 +158,7 @@ func (p Price) String() string {
 		p.Current.AUD.Time, p.toToman(p.Current.AUD.Price),
 		p.Current.AED.Time, p.toToman(p.Current.AED.Price),
 		p.Current.TRY.Time, p.toToman(p.Current.TRY.Price),
+		p.Current.SEK.Time, p.toToman(p.Current.SEK.Price),
 
 		p.Current.BitCoin.Time, p.Current.BitCoin.Price,
 		p.Current.Tether.Time, p.toToman(p.Current.Tether.Price),
