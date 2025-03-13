@@ -33,3 +33,4 @@ go.work
 .env
 
 /build
+telegram_state.json

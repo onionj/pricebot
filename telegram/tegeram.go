@@ -5,17 +5,20 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 )
+
+const stateFile = "telegram_state.json"
 
 type Telegram struct {
 	botToken        string
 	chatID          string
-	LastMessageId   int
-	LastMessageTime int64
+	LastMessageId   int   `json:"last_message_id"`
+	LastMessageTime int64 `json:"last_message_time"`
 }
 
-type sendMessageResponse struct {
+type messageResponse struct {
 	OK     bool `json:"ok"`
 	Result struct {
 		MessageID int `json:"message_id"`
@@ -24,9 +27,39 @@ type sendMessageResponse struct {
 	ErrCode     int    `json:"error_code"`
 }
 
+// NewTelegram initializes a Telegram bot and loads state from a file
 func NewTelegram(botToken, chatID string) *Telegram {
-	// TODO: save and reload LastMessageTime and LastMessageId from file/db
-	return &Telegram{botToken: botToken, chatID: chatID, LastMessageTime: 0}
+	t := &Telegram{botToken: botToken, chatID: chatID}
+
+	// Load state from file
+	if err := t.loadState(); err != nil {
+		fmt.Println("Warning: Could not load state,", err)
+	}
+
+	return t
+}
+
+// Save state to file
+func (t *Telegram) saveState() error {
+	data, err := json.Marshal(t)
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(stateFile, data, 0644)
+}
+
+// Load state from file
+func (t *Telegram) loadState() error {
+	data, err := os.ReadFile(stateFile)
+	if err != nil {
+		return err
+	}
+
+	if err := json.Unmarshal(data, t); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (t *Telegram) SendMessage(msg string) error {
@@ -48,7 +81,7 @@ func (t *Telegram) SendMessage(msg string) error {
 	}
 	defer resp.Body.Close()
 
-	var response sendMessageResponse
+	var response messageResponse
 	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
 		return err
 	}
@@ -59,7 +92,7 @@ func (t *Telegram) SendMessage(msg string) error {
 
 	t.LastMessageId = response.Result.MessageID
 	t.LastMessageTime = time.Now().Unix()
-	return nil
+	return t.saveState()
 }
 
 func (t *Telegram) UpdateMessage(msg string, messageId int) error {
@@ -82,7 +115,7 @@ func (t *Telegram) UpdateMessage(msg string, messageId int) error {
 
 	defer resp.Body.Close()
 
-	var response sendMessageResponse
+	var response messageResponse
 	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
 		return err
 	}
