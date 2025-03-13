@@ -27,6 +27,9 @@ type CurrentData struct {
 	AED    Detail `json:"price_aed"`
 	TRY    Detail `json:"price_try"`
 	SEK    Detail `json:"price_sek"`
+	CNY    Detail `json:"price_cny"`
+	SAR    Detail `json:"price_sar"`
+	IQD    Detail `json:"price_iqd"`
 
 	Tether   Detail `json:"crypto-tether-irr"`
 	BitCoin  Detail `json:"crypto-bitcoin"`
@@ -136,6 +139,9 @@ func (p Price) String() string {
 ا🇦🇪 درهم امارات (%s) ⬅️ *%s* تومان
 ا🇹🇷 لیر ترکیه (%s) ⬅️ *%s* تومان
 ا🇸🇪 کرون سوئد (%s) ⬅️ *%s* تومان
+ا🇨🇳 یوان چین (%s) ⬅️ *%s* تومان
+ا🇸🇦 ریال عربستان (%s) ⬅️ *%s* تومان
+ا🇮🇶 دینار عراق (%s) ⬅️ *%s* ریال
 
 ا👑 بیتکوین (%s) ⬅️ *%s* دلار
 ا🇺🇸 تتر (%s) ⬅️ *%s* تومان
@@ -159,6 +165,9 @@ func (p Price) String() string {
 		p.Current.AED.Time, p.toToman(p.Current.AED.Price),
 		p.Current.TRY.Time, p.toToman(p.Current.TRY.Price),
 		p.Current.SEK.Time, p.toToman(p.Current.SEK.Price),
+		p.Current.CNY.Time, p.toToman(p.Current.CNY.Price),
+		p.Current.SAR.Time, p.toToman(p.Current.SAR.Price),
+		p.Current.IQD.Time, p.Current.IQD.Price,
 
 		p.Current.BitCoin.Time, p.Current.BitCoin.Price,
 		p.Current.Tether.Time, p.toToman(p.Current.Tether.Price),
