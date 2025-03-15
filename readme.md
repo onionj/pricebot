@@ -100,5 +100,5 @@ This project uses GitHub Actions for continuous integration. On every push and p
 
 ## License 📄
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
