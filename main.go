@@ -73,7 +73,10 @@ func main() {
 }
 
 func createTelegramMessage(priceData string, nextUpdateSecond int64, chanelName string, ending bool, proxyLink string) string {
-	proxy := fmt.Sprintf("ا🗝 [پروکسی](%s)", proxyLink)
+	proxy := ""
+	if proxyLink != "" {
+		proxy = fmt.Sprintf("ا🗝 [پروکسی](%s)", proxyLink)
+	}
 
 	if ending {
 		return fmt.Sprintf("%s\n\n%s", priceData, chanelName)
