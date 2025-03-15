@@ -12,6 +12,12 @@ import (
 	"github.com/onionj/pricebot/utils"
 )
 
+// Make these package variables so they can be modified in tests
+var (
+	httpClient = &http.Client{}
+	baseURL    = "https://call3.tgju.org/ajax.json"
+)
+
 type Detail struct {
 	Price    string `json:"p"`
 	DateTime string `json:"ts"`
@@ -61,7 +67,7 @@ func (p *Price) Refresh() error {
 	ltime := time.Now().In(loc)
 
 	// ‍‍`what` just for deactivate cache!
-	url := fmt.Sprintf("https://call3.tgju.org/ajax.json?what=%d", ltime.Unix())
+	url := fmt.Sprintf("%s?what=%d", baseURL, ltime.Unix())
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -70,8 +76,7 @@ func (p *Price) Refresh() error {
 
 	req.Header.Set("Accept-Language", "fa-IR")
 
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("error making request: %w", err)
 	}

@@ -9,7 +9,12 @@ import (
 	"time"
 )
 
-const stateFile = "telegram_state.json"
+// Make these package variables so they can be modified in tests
+var (
+	stateFile  = "telegram_state.json"
+	httpClient = &http.Client{}
+	baseURL    = "https://api.telegram.org/bot%s%s"
+)
 
 type Telegram struct {
 	botToken        string
@@ -73,8 +78,8 @@ func (t *Telegram) SendMessage(msg string) error {
 		return err
 	}
 
-	resp, err := http.Post(
-		fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage", t.botToken),
+	resp, err := httpClient.Post(
+		fmt.Sprintf(baseURL, t.botToken, "/sendMessage"),
 		"application/json", bytes.NewBuffer(body))
 
 	if err != nil {
@@ -107,8 +112,8 @@ func (t *Telegram) UpdateMessage(msg string, messageId int) error {
 	if err != nil {
 		return err
 	}
-	resp, err := http.Post(
-		fmt.Sprintf("https://api.telegram.org/bot%s/editMessageText", t.botToken),
+	resp, err := httpClient.Post(
+		fmt.Sprintf(baseURL, t.botToken, "/editMessageText"),
 		"application/json", bytes.NewBuffer(body))
 
 	if err != nil {
