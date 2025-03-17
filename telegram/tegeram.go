@@ -71,7 +71,7 @@ func (t *Telegram) SendMessage(msg string) error {
 	payload := map[string]string{
 		"chat_id":    t.chatID,
 		"text":       msg,
-		"parse_mode": "Markdown",
+		"parse_mode": "HTML",
 	}
 	body, err := json.Marshal(payload)
 	if err != nil {
@@ -106,7 +106,7 @@ func (t *Telegram) UpdateMessage(msg string, messageId int) error {
 		"chat_id":    t.chatID,
 		"message_id": messageId,
 		"text":       msg,
-		"parse_mode": "Markdown",
+		"parse_mode": "HTML",
 	}
 	body, err := json.Marshal(payload)
 	if err != nil {

@@ -75,15 +75,15 @@ func main() {
 func createTelegramMessage(priceData string, nextUpdateSecond int64, chanelName string, ending bool, proxyLink string) string {
 	proxy := ""
 	if proxyLink != "" {
-		proxy = fmt.Sprintf("ا🗝 [پروکسی](%s)", proxyLink)
+		proxy = fmt.Sprintf(`<a href="%s">ا🗝 پروکسی</a>`, proxyLink)
 	}
 
 	if ending {
-		return fmt.Sprintf("%s\n\n%s", priceData, chanelName)
+		return fmt.Sprintf("<blockquote expandable>%s\n\n%s</blockquote>", priceData, chanelName)
 	}
 
 	if nextUpdateSecond >= 7 {
-		return fmt.Sprintf("ا⏰ تا بروزرسانی بعدی قیمت ها: *%02d* ثانیه\n%s\n\n%s\n%s", nextUpdateSecond, priceData, proxy, chanelName)
+		return fmt.Sprintf("ا⏰ تا بروزرسانی بعدی قیمت ها: <b>%02d</b> ثانیه\n%s\n\n%s\n%s", nextUpdateSecond, priceData, proxy, chanelName)
 	} else if nextUpdateSecond >= 3 {
 		return fmt.Sprintf("ا🔄 درحال بروزرسانی قیمت ها \n%s\n\n%s\n%s", priceData, proxy, chanelName)
 	} else {

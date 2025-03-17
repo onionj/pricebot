@@ -43,8 +43,8 @@ func TestTelegram_SendMessage(t *testing.T) {
 			t.Errorf("Expected chat_id 'test_chat_id', got '%s'", requestBody.ChatID)
 		}
 
-		if requestBody.ParseMode != "Markdown" {
-			t.Errorf("Expected parse_mode 'Markdown', got '%s'", requestBody.ParseMode)
+		if requestBody.ParseMode != "HTML" {
+			t.Errorf("Expected parse_mode 'HTML', got '%s'", requestBody.ParseMode)
 		}
 
 		// Send mock response
@@ -107,8 +107,8 @@ func TestTelegram_UpdateMessage(t *testing.T) {
 			t.Errorf("Expected message_id 123, got %d", requestBody.MessageID)
 		}
 
-		if requestBody.ParseMode != "Markdown" {
-			t.Errorf("Expected parse_mode 'Markdown', got '%s'", requestBody.ParseMode)
+		if requestBody.ParseMode != "HTML" {
+			t.Errorf("Expected parse_mode 'HTML', got '%s'", requestBody.ParseMode)
 		}
 
 		// Send mock response
