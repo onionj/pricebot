@@ -19,9 +19,30 @@ var (
 )
 
 type Detail struct {
-	Price    string `json:"p"`
-	DateTime string `json:"ts"`
-	Time     string `json:"t"`
+	Price            string  `json:"p"`
+	DateTime         string  `json:"ts"`
+	Time             string  `json:"t"`
+	ChangePercentage float64 `json:"dp"`
+	ChangeDirection  string  `json:"dt"` // low, high
+}
+
+func (d Detail) FormatChange() string {
+
+	percentage := fmt.Sprintf("%.2f%%", d.ChangePercentage)
+	FormatPercentage := "(%s%s%s)"
+
+	if d.ChangePercentage == 0 {
+		return "⬅️"
+	}
+
+	switch d.ChangeDirection {
+	case "high":
+		return fmt.Sprintf(FormatPercentage, percentage, "+", "🟢")
+	case "low":
+		return fmt.Sprintf(FormatPercentage, percentage, "-", "🔴")
+	default:
+		return "⬅️"
+	}
 }
 
 type CurrentData struct {
@@ -136,56 +157,56 @@ func (p Price) String() string {
 
 	return fmt.Sprintf(`ا📆 اخرین بروزرسانی: %02d:%02d:%02d %s
 
-ا🇺🇸 دلار امریکا (%s) ⬅️ *%s* تومان
-ا🇪🇺 یورو اروپا (%s) ⬅️ *%s* تومان
-ا🇬🇧 پوند انگلیس (%s) ⬅️ *%s* تومان
-ا🇨🇦 دلار کانادا (%s) ⬅️ *%s* تومان
-ا🇦🇺 دلار استرالیا (%s) ⬅️ *%s* تومان
-ا🇦🇪 درهم امارات (%s) ⬅️ *%s* تومان
-ا🇹🇷 لیر ترکیه (%s) ⬅️ *%s* تومان
-ا🇸🇪 کرون سوئد (%s) ⬅️ *%s* تومان
-ا🇨🇳 یوان چین (%s) ⬅️ *%s* تومان
-ا🇸🇦 ریال عربستان (%s) ⬅️ *%s* تومان
-ا🇮🇶 دینار عراق (%s) ⬅️ *%s* ریال
+ا🇺🇸 دلار امریکا (%s) %s *%s* تومان
+ا🇪🇺 یورو اروپا (%s) %s *%s* تومان
+ا🇬🇧 پوند انگلیس (%s) %s *%s* تومان
+ا🇨🇦 دلار کانادا (%s) %s *%s* تومان
+ا🇦🇺 دلار استرالیا (%s) %s *%s* تومان
+ا🇦🇪 درهم امارات (%s) %s *%s* تومان
+ا🇹🇷 لیر ترکیه (%s) %s *%s* تومان
+ا🇸🇪 کرون سوئد (%s) %s *%s* تومان
+ا🇨🇳 یوان چین (%s) %s *%s* تومان
+ا🇸🇦 ریال عربستان (%s) %s *%s* تومان
+ا🇮🇶 دینار عراق (%s) %s *%s* ریال
 
-ا👑 بیتکوین (%s) ⬅️ *%s* دلار
-ا🇺🇸 تتر (%s) ⬅️ *%s* تومان
-ا💠 اتریوم (%s) ⬅️ *%s* دلار
+ا👑 بیتکوین (%s) %s *%s* دلار
+ا🇺🇸 تتر (%s) %s *%s* تومان
+ا💠 اتریوم (%s) %s *%s* دلار
 
-ا🪙 سکه بهار آزادی (%s) ⬅️ *%s* تومان
-ا🪙 سکه امامی (%s) ⬅️ *%s* تومان
-ا🪙 نیم سکه (%s) ⬅️ *%s* تومان
-ا🪙 ربع سکه (%s) ⬅️ *%s* تومان
-ا🪙 ربع سکه قبل ۸۶ (%s) ⬅️ *%s* تومان
+ا🪙 سکه بهار آزادی (%s) %s *%s* تومان
+ا🪙 سکه امامی (%s) %s *%s* تومان
+ا🪙 نیم سکه (%s) %s *%s* تومان
+ا🪙 ربع سکه (%s) %s *%s* تومان
+ا🪙 ربع سکه قبل ۸۶ (%s) %s *%s* تومان
 
-ا💰 طلا گرمی (%s) ⬅️ *%s* تومان
-ا💰 مثقال طلا (%s) ⬅️ *%s* تومان
-ا💰 انس طلا (%s) ⬅️ *%s* دلار`,
+ا💰 طلا گرمی (%s) %s *%s* تومان
+ا💰 مثقال طلا (%s) %s *%s* تومان
+ا💰 انس طلا (%s) %s *%s* دلار`,
 		p.LastRefresh.Hour(), p.LastRefresh.Minute(), p.LastRefresh.Second(), p.JLastRefresh.String(),
-		p.Current.Dollar.Time, p.toToman(p.Current.Dollar.Price),
-		p.Current.Eur.Time, p.toToman(p.Current.Eur.Price),
-		p.Current.GBP.Time, p.toToman(p.Current.GBP.Price),
-		p.Current.CAD.Time, p.toToman(p.Current.CAD.Price),
-		p.Current.AUD.Time, p.toToman(p.Current.AUD.Price),
-		p.Current.AED.Time, p.toToman(p.Current.AED.Price),
-		p.Current.TRY.Time, p.toToman(p.Current.TRY.Price),
-		p.Current.SEK.Time, p.toToman(p.Current.SEK.Price),
-		p.Current.CNY.Time, p.toToman(p.Current.CNY.Price),
-		p.Current.SAR.Time, p.toToman(p.Current.SAR.Price),
-		p.Current.IQD.Time, p.Current.IQD.Price,
+		p.Current.Dollar.Time, p.Current.Dollar.FormatChange(), p.toToman(p.Current.Dollar.Price),
+		p.Current.Eur.Time, p.Current.Eur.FormatChange(), p.toToman(p.Current.Eur.Price),
+		p.Current.GBP.Time, p.Current.GBP.FormatChange(), p.toToman(p.Current.GBP.Price),
+		p.Current.CAD.Time, p.Current.CAD.FormatChange(), p.toToman(p.Current.CAD.Price),
+		p.Current.AUD.Time, p.Current.AUD.FormatChange(), p.toToman(p.Current.AUD.Price),
+		p.Current.AED.Time, p.Current.AED.FormatChange(), p.toToman(p.Current.AED.Price),
+		p.Current.TRY.Time, p.Current.TRY.FormatChange(), p.toToman(p.Current.TRY.Price),
+		p.Current.SEK.Time, p.Current.SEK.FormatChange(), p.toToman(p.Current.SEK.Price),
+		p.Current.CNY.Time, p.Current.CNY.FormatChange(), p.toToman(p.Current.CNY.Price),
+		p.Current.SAR.Time, p.Current.SAR.FormatChange(), p.toToman(p.Current.SAR.Price),
+		p.Current.IQD.Time, p.Current.IQD.FormatChange(), p.Current.IQD.Price,
 
-		p.Current.BitCoin.Time, p.Current.BitCoin.Price,
-		p.Current.Tether.Time, p.toToman(p.Current.Tether.Price),
-		p.Current.Ethereum.Time, p.Current.Ethereum.Price,
+		p.Current.BitCoin.Time, p.Current.BitCoin.FormatChange(), p.Current.BitCoin.Price,
+		p.Current.Tether.Time, p.Current.Tether.FormatChange(), p.toToman(p.Current.Tether.Price),
+		p.Current.Ethereum.Time, p.Current.Ethereum.FormatChange(), p.Current.Ethereum.Price,
 
-		p.Current.SekeB.Time, p.toToman(p.Current.SekeB.Price),
-		p.Current.SekeE.Time, p.toToman(p.Current.SekeE.Price),
-		p.Current.Nim.Time, p.toToman(p.Current.Nim.Price),
-		p.Current.Rob.Time, p.toToman(p.Current.Rob.Price),
-		p.Current.RobDown.Time, p.toToman(p.Current.RobDown.Price),
+		p.Current.SekeB.Time, p.Current.SekeB.FormatChange(), p.toToman(p.Current.SekeB.Price),
+		p.Current.SekeE.Time, p.Current.SekeE.FormatChange(), p.toToman(p.Current.SekeE.Price),
+		p.Current.Nim.Time, p.Current.Nim.FormatChange(), p.toToman(p.Current.Nim.Price),
+		p.Current.Rob.Time, p.Current.Rob.FormatChange(), p.toToman(p.Current.Rob.Price),
+		p.Current.RobDown.Time, p.Current.RobDown.FormatChange(), p.toToman(p.Current.RobDown.Price),
 
-		p.Current.Geram18.Time, p.toToman(p.Current.Geram18.Price),
-		p.Current.Mesghal.Time, p.toToman(p.Current.Mesghal.Price),
-		p.Current.Ons.Time, p.Current.Ons.Price,
+		p.Current.Geram18.Time, p.Current.Geram18.FormatChange(), p.toToman(p.Current.Geram18.Price),
+		p.Current.Mesghal.Time, p.Current.Mesghal.FormatChange(), p.toToman(p.Current.Mesghal.Price),
+		p.Current.Ons.Time, p.Current.Ons.FormatChange(), p.Current.Ons.Price,
 	)
 }
