@@ -65,10 +65,10 @@ func TestPrice_Refresh(t *testing.T) {
 		changeDir     string
 		wantFormat    string
 	}{
-		{"Dollar", p.Current.Dollar.Price, p.Current.Dollar.ChangePercentage, p.Current.Dollar.ChangeDirection, "(2.45%+🟢)"},
-		{"Euro", p.Current.Eur.Price, p.Current.Eur.ChangePercentage, p.Current.Eur.ChangeDirection, "(1.23%-🔴)"},
+		{"Dollar", p.Current.Dollar.Price, p.Current.Dollar.ChangePercentage, p.Current.Dollar.ChangeDirection, "🟢"},
+		{"Euro", p.Current.Eur.Price, p.Current.Eur.ChangePercentage, p.Current.Eur.ChangeDirection, "🔴"},
 		{"GBP", p.Current.GBP.Price, p.Current.GBP.ChangePercentage, p.Current.GBP.ChangeDirection, "⬅️"},
-		{"Bitcoin", p.Current.BitCoin.Price, p.Current.BitCoin.ChangePercentage, p.Current.BitCoin.ChangeDirection, "(5.20%+🟢)"},
+		{"Bitcoin", p.Current.BitCoin.Price, p.Current.BitCoin.ChangePercentage, p.Current.BitCoin.ChangeDirection, "🟢"},
 	}
 
 	for _, tc := range testCases {
@@ -109,10 +109,10 @@ func TestPrice_String(t *testing.T) {
 
 	// Test that the output contains expected values
 	expectedStrings := []string{
-		"دلار امریکا (12:00) (2.45%+🟢) *50,000* تومان",
-		"یورو اروپا (12:00) (1.23%-🔴) *55,000* تومان",
-		"بیتکوین (12:00) (5.20%+🟢) *65000* دلار",
-		"پوند انگلیس (12:00) ⬅️ *60,000* تومان",
+		"دلار امریکا (12:00)🟢 *50,000* تومان",
+		"یورو اروپا (12:00)🔴 *55,000* تومان",
+		"بیتکوین (12:00)🟢 *65000* دلار",
+		"پوند انگلیس (12:00)⬅️ *60,000* تومان",
 	}
 
 	for _, expected := range expectedStrings {
