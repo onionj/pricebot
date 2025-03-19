@@ -57,6 +57,10 @@ func TestPrice_Refresh(t *testing.T) {
 		t.Errorf("Refresh failed: %v", err)
 	}
 
+	// Get Tehran location once for all test cases
+	loc, _ := time.LoadLocation("Asia/Tehran")
+	now := time.Now().In(loc)
+
 	// Test cases for price values and changes
 	testCases := []struct {
 		name          string
@@ -66,16 +70,16 @@ func TestPrice_Refresh(t *testing.T) {
 		datetime      string
 		wantFormat    string
 	}{
-		{"Dollar", p.Current.Dollar.Price, p.Current.Dollar.ChangePercentage, p.Current.Dollar.ChangeDirection, time.Now().Format("2006-01-02 15:04:05"), "(2.45%🟢)"},
-		{"Euro", p.Current.Eur.Price, p.Current.Eur.ChangePercentage, p.Current.Eur.ChangeDirection, time.Now().Format("2006-01-02 15:04:05"), "(1.23%🔴)"},
-		{"GBP", p.Current.GBP.Price, p.Current.GBP.ChangePercentage, p.Current.GBP.ChangeDirection, time.Now().Format("2006-01-02 15:04:05"), "⬅️"},
-		{"Bitcoin", p.Current.BitCoin.Price, p.Current.BitCoin.ChangePercentage, p.Current.BitCoin.ChangeDirection, time.Now().Format("2006-01-02 15:04:05"), "(5.20%🟢)"},
-		{"59m Old Price", "1000000", 1.5, "high", time.Now().Add(-59 * time.Minute).Format("2006-01-02 15:04:05"), "(1.50%🟢)"},
-		{"61m Old Price", "1000000", 1.5, "high", time.Now().Add(-61 * time.Minute).Format("2006-01-02 15:04:05"), "(🔒1.50%🟢)"},
-		{"1 Day Old Price", "1000000", 1.5, "high", time.Now().Add(-24 * time.Hour).Format("2006-01-02 15:04:05"), "(🔒1.50%🟢)"},
+		{"Dollar", p.Current.Dollar.Price, p.Current.Dollar.ChangePercentage, p.Current.Dollar.ChangeDirection, now.Format("2006-01-02 15:04:05"), "(2.45%🟢)"},
+		{"Euro", p.Current.Eur.Price, p.Current.Eur.ChangePercentage, p.Current.Eur.ChangeDirection, now.Format("2006-01-02 15:04:05"), "(1.23%🔴)"},
+		{"GBP", p.Current.GBP.Price, p.Current.GBP.ChangePercentage, p.Current.GBP.ChangeDirection, now.Format("2006-01-02 15:04:05"), "⬅️"},
+		{"Bitcoin", p.Current.BitCoin.Price, p.Current.BitCoin.ChangePercentage, p.Current.BitCoin.ChangeDirection, now.Format("2006-01-02 15:04:05"), "(5.20%🟢)"},
+		{"59m Old Price", "1000000", 1.5, "high", now.Add(-59 * time.Minute).Format("2006-01-02 15:04:05"), "(1.50%🟢)"},
+		{"61m Old Price", "1000000", 1.5, "high", now.Add(-61 * time.Minute).Format("2006-01-02 15:04:05"), "(🔒1.50%🟢)"},
+		{"1 Day Old Price", "1000000", 1.5, "high", now.Add(-24 * time.Hour).Format("2006-01-02 15:04:05"), "(🔒1.50%🟢)"},
 		{"Locked Price", "1000000", 1.5, "high", "2020-03-19 12:00:00", "(🔒1.50%🟢)"},
 		{"Locked Zero Change", "1000000", 0, "", "2020-03-19 12:00:00", "🔒"},
-		{"Zero Change Recent", "1000000", 0, "", time.Now().Format("2006-01-02 15:04:05"), "⬅️"},
+		{"Zero Change Recent", "1000000", 0, "", now.Format("2006-01-02 15:04:05"), "⬅️"},
 	}
 
 	for _, tc := range testCases {
@@ -103,11 +107,15 @@ func TestPrice_Refresh(t *testing.T) {
 }
 
 func TestPrice_String(t *testing.T) {
+
+	// Get Tehran location once for all test cases
+	loc, _ := time.LoadLocation("Asia/Tehran")
+	now := time.Now().In(loc)
 	p := &Price{
 		Current: CurrentData{
-			Dollar:  Detail{Price: "500000", Time: "12:00", DateTime: time.Now().Format("2006-01-02 15:04:05"), ChangePercentage: 2.45, ChangeDirection: "high"},
-			Eur:     Detail{Price: "550000", Time: "12:00", DateTime: time.Now().Format("2006-01-02 15:04:05"), ChangePercentage: 1.23, ChangeDirection: "low"},
-			BitCoin: Detail{Price: "65000", Time: "12:00", DateTime: time.Now().Format("2006-01-02 15:04:05"), ChangePercentage: 5.20, ChangeDirection: "high"},
+			Dollar:  Detail{Price: "500000", Time: "12:00", DateTime: now.Format("2006-01-02 15:04:05"), ChangePercentage: 2.45, ChangeDirection: "high"},
+			Eur:     Detail{Price: "550000", Time: "12:00", DateTime: now.Format("2006-01-02 15:04:05"), ChangePercentage: 1.23, ChangeDirection: "low"},
+			BitCoin: Detail{Price: "65000", Time: "12:00", DateTime: now.Format("2006-01-02 15:04:05"), ChangePercentage: 5.20, ChangeDirection: "high"},
 			GBP:     Detail{Price: "600000", Time: "12:00", DateTime: "2020-03-19 12:00:00", ChangePercentage: 0, ChangeDirection: ""},
 		},
 		LastRefresh: time.Date(2024, 3, 20, 12, 0, 0, 0, time.UTC),
