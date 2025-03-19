@@ -20,7 +20,7 @@ var (
 
 type Detail struct {
 	Price            string  `json:"p"`
-	DateTime         string  `json:"ts"`
+	DateTime         string  `json:"ts"` // Format: "2025-03-18 00:00:00"
 	Time             string  `json:"t"`
 	ChangePercentage float64 `json:"dp"`
 	ChangeDirection  string  `json:"dt"` // low, high
@@ -28,20 +28,26 @@ type Detail struct {
 
 func (d Detail) FormatChange() string {
 
-	percentage := fmt.Sprintf("%.2f%%", d.ChangePercentage)
-	FormatPercentage := "(%s%s)"
+	lockEmoji := ""
 
-	if d.ChangePercentage == 0 {
-		return "⬅️"
+	loc, _ := time.LoadLocation("Asia/Tehran")
+	dt, err := time.ParseInLocation("2006-01-02 15:04:05", d.DateTime, loc)
+	if err == nil {
+		if time.Since(dt) > time.Hour {
+			lockEmoji = "🔒"
+		}
 	}
 
 	switch d.ChangeDirection {
 	case "high":
-		return fmt.Sprintf(FormatPercentage, percentage, "🟢")
+		return fmt.Sprintf("(%s%s%s)", lockEmoji, fmt.Sprintf("%.2f%%", d.ChangePercentage), "🟢")
 	case "low":
-		return fmt.Sprintf(FormatPercentage, percentage, "🔴")
+		return fmt.Sprintf("(%s%s%s)", lockEmoji, fmt.Sprintf("%.2f%%", d.ChangePercentage), "🔴")
 	default:
-		return "⬅️"
+		if lockEmoji == "" {
+			return "⬅️"
+		}
+		return lockEmoji
 	}
 }
 

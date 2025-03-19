@@ -63,12 +63,19 @@ func TestPrice_Refresh(t *testing.T) {
 		price         string
 		changePercent float64
 		changeDir     string
+		datetime      string
 		wantFormat    string
 	}{
-		{"Dollar", p.Current.Dollar.Price, p.Current.Dollar.ChangePercentage, p.Current.Dollar.ChangeDirection, "(2.45%🟢)"},
-		{"Euro", p.Current.Eur.Price, p.Current.Eur.ChangePercentage, p.Current.Eur.ChangeDirection, "(1.23%🔴)"},
-		{"GBP", p.Current.GBP.Price, p.Current.GBP.ChangePercentage, p.Current.GBP.ChangeDirection, "⬅️"},
-		{"Bitcoin", p.Current.BitCoin.Price, p.Current.BitCoin.ChangePercentage, p.Current.BitCoin.ChangeDirection, "(5.20%🟢)"},
+		{"Dollar", p.Current.Dollar.Price, p.Current.Dollar.ChangePercentage, p.Current.Dollar.ChangeDirection, time.Now().Format("2006-01-02 15:04:05"), "(2.45%🟢)"},
+		{"Euro", p.Current.Eur.Price, p.Current.Eur.ChangePercentage, p.Current.Eur.ChangeDirection, time.Now().Format("2006-01-02 15:04:05"), "(1.23%🔴)"},
+		{"GBP", p.Current.GBP.Price, p.Current.GBP.ChangePercentage, p.Current.GBP.ChangeDirection, time.Now().Format("2006-01-02 15:04:05"), "⬅️"},
+		{"Bitcoin", p.Current.BitCoin.Price, p.Current.BitCoin.ChangePercentage, p.Current.BitCoin.ChangeDirection, time.Now().Format("2006-01-02 15:04:05"), "(5.20%🟢)"},
+		{"59m Old Price", "1000000", 1.5, "high", time.Now().Add(-59 * time.Minute).Format("2006-01-02 15:04:05"), "(1.50%🟢)"},
+		{"61m Old Price", "1000000", 1.5, "high", time.Now().Add(-61 * time.Minute).Format("2006-01-02 15:04:05"), "(🔒1.50%🟢)"},
+		{"1 Day Old Price", "1000000", 1.5, "high", time.Now().Add(-24 * time.Hour).Format("2006-01-02 15:04:05"), "(🔒1.50%🟢)"},
+		{"Locked Price", "1000000", 1.5, "high", "2020-03-19 12:00:00", "(🔒1.50%🟢)"},
+		{"Locked Zero Change", "1000000", 0, "", "2020-03-19 12:00:00", "🔒"},
+		{"Zero Change Recent", "1000000", 0, "", time.Now().Format("2006-01-02 15:04:05"), "⬅️"},
 	}
 
 	for _, tc := range testCases {
@@ -77,6 +84,7 @@ func TestPrice_Refresh(t *testing.T) {
 				Price:            tc.price,
 				ChangePercentage: tc.changePercent,
 				ChangeDirection:  tc.changeDir,
+				DateTime:         tc.datetime,
 			}
 			got := detail.FormatChange()
 			if got != tc.wantFormat {
@@ -97,10 +105,10 @@ func TestPrice_Refresh(t *testing.T) {
 func TestPrice_String(t *testing.T) {
 	p := &Price{
 		Current: CurrentData{
-			Dollar:  Detail{Price: "500000", Time: "12:00", ChangePercentage: 2.45, ChangeDirection: "high"},
-			Eur:     Detail{Price: "550000", Time: "12:00", ChangePercentage: 1.23, ChangeDirection: "low"},
-			BitCoin: Detail{Price: "65000", Time: "12:00", ChangePercentage: 5.20, ChangeDirection: "high"},
-			GBP:     Detail{Price: "600000", Time: "12:00", ChangePercentage: 0, ChangeDirection: ""},
+			Dollar:  Detail{Price: "500000", Time: "12:00", DateTime: time.Now().Format("2006-01-02 15:04:05"), ChangePercentage: 2.45, ChangeDirection: "high"},
+			Eur:     Detail{Price: "550000", Time: "12:00", DateTime: time.Now().Format("2006-01-02 15:04:05"), ChangePercentage: 1.23, ChangeDirection: "low"},
+			BitCoin: Detail{Price: "65000", Time: "12:00", DateTime: time.Now().Format("2006-01-02 15:04:05"), ChangePercentage: 5.20, ChangeDirection: "high"},
+			GBP:     Detail{Price: "600000", Time: "12:00", DateTime: "2020-03-19 12:00:00", ChangePercentage: 0, ChangeDirection: ""},
 		},
 		LastRefresh: time.Date(2024, 3, 20, 12, 0, 0, 0, time.UTC),
 	}
@@ -112,7 +120,7 @@ func TestPrice_String(t *testing.T) {
 		"دلار امریکا (2.45%🟢) <b>50,000</b> تومان",
 		"یورو اروپا (1.23%🔴) <b>55,000</b> تومان",
 		"بیتکوین (5.20%🟢) <b>65000</b> دلار",
-		"پوند انگلیس ⬅️ <b>60,000</b> تومان",
+		"پوند انگلیس 🔒 <b>60,000</b> تومان",
 	}
 
 	for _, expected := range expectedStrings {
