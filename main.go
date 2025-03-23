@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	NEW_MESSAGE_PERIOD    = 60 * 60 * 6
+	NEW_MESSAGE_PERIOD    = 60 * 60 * 12
 	UPDATE_MESSAGE_PERIOD = 4
 	UPDATE_PRICE_PERIOD   = 60
 )
