@@ -67,6 +67,7 @@ type CurrentData struct {
 	Tether   Detail `json:"crypto-tether-irr"`
 	BitCoin  Detail `json:"crypto-bitcoin"`
 	Ethereum Detail `json:"crypto-ethereum"`
+	TonCoin Detail `json:"crypto-toncoin"`
 
 	SekeB   Detail `json:"sekeb"`
 	SekeE   Detail `json:"sekee"`
@@ -178,6 +179,7 @@ func (p Price) String() string {
 ا👑 بیتکوین %s <b>%s</b> دلار
 ا🇺🇸 تتر %s <b>%s</b> تومان
 ا💠 اتریوم %s <b>%s</b> دلار
+ا🔷 تون‌کوین %s <b>%s</b> دلار
 
 ا🪙 سکه بهار آزادی %s <b>%s</b> تومان
 ا🪙 سکه امامی %s <b>%s</b> تومان
@@ -204,6 +206,7 @@ func (p Price) String() string {
 		p.Current.BitCoin.FormatChange(), p.Current.BitCoin.Price,
 		p.Current.Tether.FormatChange(), p.toToman(p.Current.Tether.Price),
 		p.Current.Ethereum.FormatChange(), p.Current.Ethereum.Price,
+		p.Current.TonCoin.FormatChange(), p.Current.TonCoin.Price,
 
 		p.Current.SekeB.FormatChange(), p.toToman(p.Current.SekeB.Price),
 		p.Current.SekeE.FormatChange(), p.toToman(p.Current.SekeE.Price),
