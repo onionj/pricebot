@@ -80,7 +80,7 @@ type CurrentData struct {
 	Mesghal Detail `json:"mesghal"`
 	Ons     Detail `json:"ons"`
 
-	BrentOil Detail `json:"energy-brent-oil"`
+	BrentOil Detail `json:"oil_brent"`
 }
 
 type Price struct {
