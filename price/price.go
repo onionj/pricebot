@@ -79,6 +79,8 @@ type CurrentData struct {
 	Geram18 Detail `json:"geram18"`
 	Mesghal Detail `json:"mesghal"`
 	Ons     Detail `json:"ons"`
+
+	BrentOil Detail `json:"energy-brent-oil"`
 }
 
 type Price struct {
@@ -191,7 +193,9 @@ func (p Price) String() string {
 
 ا💰 طلا گرمی %s <b>%s</b> تومان
 ا💰 مثقال طلا %s <b>%s</b> تومان
-ا💰 انس طلا %s <b>%s</b> دلار`,
+ا💰 انس طلا %s <b>%s</b> دلار
+
+ا🛢 نفت برنت %s <b>%s</b> دلار`,
 		p.LastRefresh.Hour(), p.LastRefresh.Minute(), p.LastRefresh.Second(), p.JLastRefresh.String(),
 		p.Current.Dollar.FormatChange(), p.toToman(p.Current.Dollar.Price),
 		p.Current.Eur.FormatChange(), p.toToman(p.Current.Eur.Price),
@@ -220,5 +224,7 @@ func (p Price) String() string {
 		p.Current.Geram18.FormatChange(), p.toToman(p.Current.Geram18.Price),
 		p.Current.Mesghal.FormatChange(), p.toToman(p.Current.Mesghal.Price),
 		p.Current.Ons.FormatChange(), p.Current.Ons.Price,
+
+		p.Current.BrentOil.FormatChange(), p.Current.BrentOil.Price,
 	)
 }
