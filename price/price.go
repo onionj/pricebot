@@ -15,7 +15,7 @@ import (
 // Make these package variables so they can be modified in tests
 var (
 	httpClient = &http.Client{}
-	baseURL    = "https://call3.tgju.org/ajax.json"
+	baseURL    = "https://call2.tgju.org/ajax.json"
 )
 
 type Detail struct {
