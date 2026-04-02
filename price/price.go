@@ -15,7 +15,13 @@ import (
 // Make these package variables so they can be modified in tests
 var (
 	httpClient = &http.Client{}
-	baseURL    = "https://call2.tgju.org/ajax.json"
+	baseURLs   = []string{
+		"https://call1.tgju.org/ajax.json",
+		"https://call2.tgju.org/ajax.json",
+		"https://call3.tgju.org/ajax.json",
+		"https://call4.tgju.org/ajax.json",
+		"https://call5.tgju.org/ajax.json",
+	}
 )
 
 type Detail struct {
@@ -97,38 +103,48 @@ func (p *Price) Refresh() error {
 	loc, _ := time.LoadLocation("Asia/Tehran")
 	ltime := time.Now().In(loc)
 
-	// ‍‍`what` just for deactivate cache!
-	url := fmt.Sprintf("%s?what=%d", baseURL, ltime.Unix())
+	var lastErr error
+	for _, baseURL := range baseURLs {
+		// ‍‍`what` just for deactivate cache!
+		url := fmt.Sprintf("%s?what=%d", baseURL, ltime.Unix())
 
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return fmt.Errorf("error creating request: %w", err)
+		req, err := http.NewRequest("GET", url, nil)
+		if err != nil {
+			lastErr = fmt.Errorf("error creating request: %w", err)
+			continue
+		}
+
+		req.Header.Set("Accept-Language", "fa-IR")
+
+		resp, err := httpClient.Do(req)
+		if err != nil {
+			lastErr = fmt.Errorf("error making request: %w", err)
+			continue
+		}
+
+		body, err := io.ReadAll(resp.Body)
+		resp.Body.Close()
+		if err != nil {
+			lastErr = fmt.Errorf("error reading response: %w", err)
+			continue
+		}
+
+		if resp.StatusCode != http.StatusOK {
+			lastErr = fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+			continue
+		}
+
+		if err := json.Unmarshal(body, p); err != nil {
+			lastErr = fmt.Errorf("error unmarshaling response: %w", err)
+			continue
+		}
+
+		p.LastRefresh = ltime
+		p.JLastRefresh = utils.GregorianToJalali(p.LastRefresh.Year(), int(p.LastRefresh.Month()), p.LastRefresh.Day())
+		return nil
 	}
 
-	req.Header.Set("Accept-Language", "fa-IR")
-
-	resp, err := httpClient.Do(req)
-	if err != nil {
-		return fmt.Errorf("error making request: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("unexpected status code: %d", resp.StatusCode)
-	}
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return fmt.Errorf("error reading response: %w", err)
-	}
-
-	if err := json.Unmarshal(body, p); err != nil {
-		return fmt.Errorf("error unmarshaling response: %w", err)
-	}
-
-	p.LastRefresh = ltime
-	p.JLastRefresh = utils.GregorianToJalali(p.LastRefresh.Year(), int(p.LastRefresh.Month()), p.LastRefresh.Day())
-	return nil
+	return fmt.Errorf("all endpoints failed, last error: %w", lastErr)
 }
 
 func (p Price) prettyNumber(i int) string {

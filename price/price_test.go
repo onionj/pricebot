@@ -49,7 +49,7 @@ func TestPrice_Refresh(t *testing.T) {
 	httpClient = server.Client()
 
 	// Replace the API URL with our mock server URL
-	baseURL = server.URL
+	baseURLs = []string{server.URL}
 
 	// Test Refresh
 	err := p.Refresh()
