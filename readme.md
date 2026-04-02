@@ -72,22 +72,60 @@ Run tests with race condition detection:
 go test -race -v ./...
 ```
 
+## Quick Install (Linux) 🐧
+
+Install the latest release as a systemd service:
+```bash
+curl -sfL https://raw.githubusercontent.com/onionj/pricebot/master/install.sh | sudo bash
+```
+
+Or from a local binary:
+```bash
+sudo bash install.sh ./price-linux-amd64
+```
+
+This will:
+- Install the binary to `/opt/pricebot/`
+- Create a `.env` config file (`/opt/pricebot/.env`)
+- Set up and enable a `pricebot` systemd service
+
+After installation, edit the config and start the service:
+```bash
+sudo nano /opt/pricebot/.env
+sudo systemctl start pricebot
+```
+
+Useful commands:
+```bash
+sudo systemctl status pricebot      # Check status
+sudo journalctl -u pricebot -f      # View logs
+sudo systemctl restart pricebot     # Restart
+```
+
 ## CI/CD 🔄
 
-This project uses GitHub Actions for continuous integration. On every push and pull request to the master branch, it:
-- Runs the test suite
-- Checks for race conditions
-- Verifies code builds successfully
+This project uses GitHub Actions for automated builds and releases. When a version tag is pushed (`v*`):
+1. Runs the test suite
+2. Builds binaries for all supported platforms (linux/darwin × amd64/arm64)
+3. Creates a GitHub Release with binaries and SHA256 checksums
+
+To create a release:
+```bash
+git tag v1.0.2
+git push origin v1.0.2
+```
 
 ## Project Structure 📁
 
 ```
-├── price/          # Price fetching and formatting
-├── telegram/       # Telegram bot implementation
-├── utils/          # Utility functions (date conversion, etc.)
-├── .env.example    # Environment variables template
-├── main.go         # Application entry point
-└── Makefile        # Build and development commands
+├── .github/workflows/ # GitHub Actions CI/CD
+├── price/             # Price fetching and formatting (with retry across multiple endpoints)
+├── telegram/          # Telegram bot implementation
+├── utils/             # Utility functions (date conversion, etc.)
+├── .env.example       # Environment variables template
+├── install.sh         # Automated install script (systemd + env)
+├── main.go            # Application entry point
+└── Makefile           # Build and development commands
 ```
 
 ## Contributing 🤝
